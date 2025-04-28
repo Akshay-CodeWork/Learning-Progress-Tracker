@@ -33,6 +33,18 @@
 </head>
 <body class="bg-gradient-to-r from-indigo-100 via-purple-100 to-pink-100 min-h-screen flex flex-col">
 
+  <!-- Modal -->
+  <div id="nameModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 hidden">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-96">
+      <h2 class="text-2xl font-bold mb-4 text-center text-indigo-700">Welcome!</h2>
+      <p class="mb-4 text-gray-600 text-center">What's your name?</p>
+      <input id="nameInput" type="text" placeholder="Enter your name" class="w-full p-3 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+      <button id="saveNameBtn" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition">
+        Save
+      </button>
+    </div>
+  </div>
+
   <!-- Motivational Quote -->
   <div id="motivational-quote" class="bg-indigo-600 text-white py-4 text-center text-lg font-semibold shadow-md">
     🌟 Loading motivation... 🌟
@@ -70,18 +82,32 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // ---------- Ask for Username & Update Header ----------
+      const nameModal = document.getElementById('nameModal');
+      const nameInput = document.getElementById('nameInput');
+      const saveNameBtn = document.getElementById('saveNameBtn');
       let userName = localStorage.getItem('userName');
+
       if (!userName) {
-        userName = prompt("Welcome! What is your name?");
-        if (userName) {
-          localStorage.setItem('userName', userName);
-        } else {
-          userName = "Student"; // fallback if no input
-        }
+        nameModal.classList.remove('hidden');
+      } else {
+        updateMotivation(userName);
       }
-      document.getElementById('motivational-quote').innerHTML = 
-        `🌟 Come on <strong>${userName}</strong>! You can do it. Focus on yourself! 🌟`;
+
+      saveNameBtn.addEventListener('click', function() {
+        const enteredName = nameInput.value.trim();
+        if (enteredName) {
+          localStorage.setItem('userName', enteredName);
+          updateMotivation(enteredName);
+          nameModal.classList.add('hidden');
+        } else {
+          alert('Please enter your name!');
+        }
+      });
+
+      function updateMotivation(name) {
+        document.getElementById('motivational-quote').innerHTML =
+          `🌟 Come on <strong>${name}</strong>! You can do it. Focus on yourself! 🌟`;
+      }
 
       // ---------- Your Progress Tracker Logic ----------
       const topics = [
@@ -182,7 +208,7 @@
           if (cell.classList.contains('completed')) completedQuestions++;
         });
         document.getElementById('completed-questions').textContent = completedQuestions;
-        document.getElementById('remaining-questions').textContent = 
+        document.getElementById('remaining-questions').textContent =
           `${totalQuestions - completedQuestions} questions remaining to complete!`;
       }
 
